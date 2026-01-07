@@ -1,0 +1,127 @@
+openapi: 3.1.0
+info:
+  title: Weather Data API
+  description: API for retrieving weather data based on specified parameters.
+  version: 1.0.0
+servers:
+  - url: 자신의 vercel app 웹사이트 주소!!
+    description: Main server
+paths:
+  /weather:
+    get:
+      operationId: getWeatherData
+      summary: Retrieve weather data
+      description: Fetches weather data based on the provided query parameters.
+      parameters:
+        - name: serviceKey
+          in: query
+          required: true
+          description: API key for authentication.
+          schema:
+            type: string
+            enum:
+              - 포털에서 발급받은 디코딩 키!!
+        - name: numOfRows
+          in: query
+          required: false
+          description: Number of rows to retrieve.
+          schema:
+            type: integer
+            default: 10
+        - name: pageNo
+          in: query
+          required: false
+          description: Page number for pagination.
+          schema:
+            type: integer
+            default: 1
+        - name: base_date
+          in: query
+          required: true
+          description: Base date for the data in YYYYMMDD format.
+          schema:
+            type: string
+            pattern: '^\d{8}$'
+        - name: base_time
+          in: query
+          required: true
+          description: Base time for the data in HHMM format.
+          schema:
+            type: string
+            pattern: '^\d{4}$'
+        - name: nx
+          in: query
+          required: true
+          description: Grid x-coordinate.
+          schema:
+            type: integer
+        - name: ny
+          in: query
+          required: true
+          description: Grid y-coordinate.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response with weather data.
+          content:
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: object
+                    properties:
+                      header:
+                        type: object
+                        properties:
+                          resultCode:
+                            type: string
+                            description: Response code.
+                          resultMsg:
+                            type: string
+                            description: Response message.
+                      body:
+                        type: object
+                        properties:
+                          dataType:
+                            type: string
+                            description: Type of the response data (e.g., XML).
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                baseDate:
+                                  type: string
+                                  description: Base date of the data.
+                                baseTime:
+                                  type: string
+                                  description: Base time of the data.
+                                category:
+                                  type: string
+                                  description: Category of the weather data.
+                                nx:
+                                  type: integer
+                                  description: Grid x-coordinate.
+                                ny:
+                                  type: integer
+                                  description: Grid y-coordinate.
+                                obsrValue:
+                                  type: string
+                                  description: Observed value.
+                          numOfRows:
+                            type: integer
+                            description: Number of rows retrieved.
+                          pageNo:
+                            type: integer
+                            description: Current page number.
+                          totalCount:
+                            type: integer
+                            description: Total number of available records.
+        "400":
+          description: Bad request due to missing or invalid parameters.
+        "401":
+          description: Unauthorized due to invalid service key.
+        "500":
+          description: Internal server error.
